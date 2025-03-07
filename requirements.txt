@@ -1,0 +1,11 @@
+# python -m venv venv
+# venv\Scripts\activate
+# python main.py
+fastapi 
+psycopg2 
+numpy 
+transformers 
+torch 
+sentencepiece 
+psycopg2-binary 
+uvicorn
