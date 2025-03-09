@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh sách Văn Bản</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">Danh Sách Văn Bản</h2>
+
+        <div class="input-group mb-3">
+            <input type="text" id="searchQuery" class="form-control" placeholder="Nhập từ khóa..." onkeydown="handleKeyPress(event)">
+            <button class="btn btn-primary" onclick="fetchVanBan()">Tìm kiếm</button>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Văn Bản</th>
+                    <th>Tỉ Lệ Tương Tự</th>
+                </tr>
+            </thead>
+            <tbody id="vanBanTableBody">
+                <tr>
+                    <td colspan="3" class="text-center">Đang tải dữ liệu...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function fetchVanBan() {
+            const query = document.getElementById("searchQuery").value || "";
+            const url = `http://127.0.0.1:8000/search?query=${encodeURIComponent(query)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById("vanBanTableBody");
+                    tableBody.innerHTML = "";
+
+                    if (data.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-danger">Không tìm thấy kết quả!</td></tr>`;
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const row = `
+                            <tr>
+                                <td>${item.id}</td>
+                                <td>${item.ten_van_ban}</td>
+                                <td>${(item.ti_le_tuong_tu * 100).toFixed(2)}%</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi khi gọi API:", error);
+                    document.getElementById("vanBanTableBody").innerHTML =
+                        `<tr><td colspan="3" class="text-center text-danger">Lỗi tải dữ liệu!</td></tr>`;
+                });
+        }
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                fetchVanBan();
+            }
+        }
+
+        // Gọi API ngay khi trang tải
+        fetchVanBan();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
